@@ -7,6 +7,6 @@ Excel、施工計画書、作業手順書などで使用する建設作業ピク
 - SVG：Excelでの配置・拡大縮小用
 - PNG：確認・簡易利用用（透過背景）
 - [カタログ](catalog/catalog.md)
-- [制作指示書](docs/pictogram_guidelines.md)
+- [制作指示書（制作ルールの正本）](docs/pictogram_guidelines.md)
 
 各ピクトグラムは黒一色で、背景は透明です。
