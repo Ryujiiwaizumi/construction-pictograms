@@ -3,9 +3,14 @@
 | ID | 日本語名 | ファイル名 | 分類 | 備考 |
 |---|---|---|---|---|
 | W001 | 仰向け姿勢作業員（フルハーネス） | [`worker_supine_full_harness.svg`](../svg/worker_supine_full_harness.svg) | 作業員 | 仰向けで両腕を上方へ伸ばす姿勢、ヘルメット・フルハーネス着用 |
+| W002 | 高圧洗浄作業員 | [`worker_pressure_washing.svg`](../svg/worker_pressure_washing.svg) | 作業員 | 高圧洗浄ノズル・ホース使用、前傾姿勢 |
 
 ## プレビュー
 
 ### W001 仰向け姿勢作業員（フルハーネス）
 
 ![W001 仰向け姿勢作業員（フルハーネス）](../png/worker_supine_full_harness.png)
+
+### W002 高圧洗浄作業員
+
+![W002 高圧洗浄作業員](../png/worker_pressure_washing.png)
