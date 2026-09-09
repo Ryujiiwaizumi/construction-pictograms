@@ -91,10 +91,14 @@ def render_png(path):
             raise ValueError()
     except (KeyError, ValueError):
         raise BuildError(f"{path.name}: valid viewBox is required") from None
-    allowed = {SVG_NS + tag for tag in ("svg", "g", "path", "title", "desc")}
+    allowed = {SVG_NS + tag for tag in ("svg", "g", "path", "title", "desc", "metadata")}
     for element in tree.iter():
         if element.tag not in allowed:
             raise BuildError(f"{path.name}: unsupported element {element.tag}; use vector paths")
+        # Metadata is inert descriptive text, never a container for SVG/XML content.
+        # Keep the attribute security checks below active for metadata as well.
+        if element.tag == SVG_NS + "metadata" and len(element):
+            raise BuildError(f"{path.name}: metadata must contain text only")
         for key, value in element.attrib.items():
             if key.split("}")[-1].lower().startswith("on") or key.split("}")[-1] in {"href", "src"}:
                 raise BuildError(f"{path.name}: external resources and scripts are prohibited")
