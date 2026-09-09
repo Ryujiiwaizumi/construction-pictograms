@@ -6,8 +6,6 @@ on:
     paths:
       - 'svg/**'
       - 'metadata/**'
-      - 'png/**'
-      - 'catalog/catalog.md'
       - 'scripts/**'
       - '.github/workflows/build-assets.yml'
   workflow_dispatch:
