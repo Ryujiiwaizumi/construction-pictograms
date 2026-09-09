@@ -11,6 +11,7 @@
 | W005 | 玉掛け作業員 | [`worker_rigging.svg`](../svg/worker_rigging.svg) | 作業員 | 片腕を斜め上方へ伸ばし、もう一方の腕を腰の前で曲げた立ち姿勢。ヘルメット・フルハーネス着用。作業員のみ描画（吊荷・ワイヤーロープ・吊り具なし） |
 | W006 | 防水材塗布作業員（前面） | [`worker_waterproofing_roller.svg`](../svg/worker_waterproofing_roller.svg) | 作業員 | フルハーネス着用、ローラーでコンクリート床に防水材を塗布 |
 | W007 | 防水材塗布作業員（背面） | [`worker_waterproofing_roller_rear.svg`](../svg/worker_waterproofing_roller_rear.svg) | 作業員 | フルハーネス着用。背面姿勢で長柄ローラーを使用。 |
+| W008 | 防水材塗布作業員（真後ろ・左前方） | [`worker_waterproofing_roller_rear_left.svg`](../svg/worker_waterproofing_roller_rear_left.svg) | 作業員 | 真後ろから見た姿勢。長柄ローラーを左前方へ伸ばす。ヘルメット・フルハーネス・保護手袋着用。 |
 
 ## プレビュー
 
@@ -41,3 +42,7 @@
 ### W007 防水材塗布作業員（背面）
 
 ![W007 防水材塗布作業員（背面）](../png/worker_waterproofing_roller_rear.png)
+
+### W008 防水材塗布作業員（真後ろ・左前方）
+
+![W008 防水材塗布作業員（真後ろ・左前方）](../png/worker_waterproofing_roller_rear_left.png)
