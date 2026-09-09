@@ -119,6 +119,47 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(catalog.build(self.root), (1, 1, 1))
         self.assertFalse((self.root / "png/worker_b.png").exists())
 
+    def test_text_metadata_preserves_rendering_and_catalog_source(self):
+        self.entry()
+        path = self.root / "svg/worker_a.svg"
+        expected = catalog.render_png(path)
+        path.write_text(SVG.replace('<path ', '<metadata>id: W999\nname_ja: 説明 &amp; 注記</metadata><path '), encoding="utf-8")
+        self.assertEqual(catalog.render_png(path), expected)
+        catalog.build(self.root)
+        text = (self.root / "catalog/catalog.md").read_text(encoding="utf-8")
+        self.assertIn("W001", text)
+        self.assertNotIn("W999", text)
+        self.assertEqual(catalog.build(self.root, check=True), (1, 0, 0))
+
+    def test_metadata_rejects_children_and_unsafe_attributes(self):
+        self.entry()
+        for metadata in (
+            '<metadata><path d="M5 5H25V20H5Z"/></metadata>',
+            '<metadata><script>alert(1)</script></metadata>',
+            '<metadata><image href="https://example.invalid/a"/></metadata>',
+            '<metadata><foreign xmlns="urn:example">text</foreign></metadata>',
+            '<metadata onload="alert(1)">text</metadata>',
+            '<metadata href="https://example.invalid/a">text</metadata>',
+            '<metadata xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://example.invalid/a">text</metadata>',
+            '<metadata src="https://example.invalid/a">text</metadata>',
+            '<metadata style="fill:url(https://example.invalid/a)">text</metadata>',
+            '<metadata style="@import example">text</metadata>',
+        ):
+            with self.subTest(metadata=metadata):
+                (self.root / "svg/worker_a.svg").write_text(SVG.replace('<path ', metadata + '<path '))
+                with self.assertRaises(catalog.BuildError):
+                    catalog.build(self.root)
+                self.assertFalse((self.root / "png").exists())
+
+    def test_metadata_rejects_entity_expansion(self):
+        self.entry()
+        from defusedxml.common import DefusedXmlException
+        source = '<!DOCTYPE svg [<!ENTITY data "unsafe">]>' + SVG.replace('<path ', '<metadata>&data;</metadata><path ')
+        (self.root / "svg/worker_a.svg").write_text(source)
+        with self.assertRaises(DefusedXmlException):
+            catalog.build(self.root)
+        self.assertFalse((self.root / "png").exists())
+
     def test_invalid_svgs_do_not_publish_partial_outputs(self):
         self.entry()
         for replacement in (
