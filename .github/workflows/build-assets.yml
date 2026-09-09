@@ -1,0 +1,64 @@
+name: Build pictogram assets
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'svg/**'
+      - 'metadata/**'
+      - 'png/**'
+      - 'catalog/catalog.md'
+      - 'scripts/**'
+      - '.github/workflows/build-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-assets-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref_type == 'branch' && github.ref_name != 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r scripts/requirements.txt
+      - name: Test generator
+        run: python -m unittest discover -s scripts/tests -v
+      - name: Generate PNGs and catalog
+        run: python scripts/build_catalog.py
+      - name: Verify reproducible outputs
+        run: python scripts/build_catalog.py --check
+      - name: Commit generated files to the same branch
+        env:
+          ASSET_BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$ASSET_BRANCH" != main
+          test "$(git branch --show-current)" = "$ASSET_BRANCH"
+          git add -- png/ catalog/catalog.md
+          if git diff --cached --quiet; then
+            echo "Generated assets are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "noreply@github.com"
+          git commit -m "chore: regenerate pictogram PNGs and catalog"
+          # Never force-push. Fail if new source changes arrived while building;
+          # the queued run will regenerate from the updated branch.
+          git push origin "HEAD:refs/heads/$ASSET_BRANCH"
