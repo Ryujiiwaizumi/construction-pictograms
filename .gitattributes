@@ -1,0 +1,5 @@
+*.py text eol=lf
+*.yml text eol=lf
+scripts/requirements.txt text eol=lf
+catalog/catalog.md text eol=lf
+*.png binary

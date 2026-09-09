@@ -105,7 +105,7 @@ Excel上で写真や図面の上に重ねて配置できることを前提とす
 ## 8. 元画像の取扱い
 
 - 制作に使用した元写真・元画像はリポジトリへ追加しない
-- GitHubには完成したSVG、PNG、および管理文書のみ保存する
+- GitHubには完成したSVG、生成PNG、YAMLメタデータ、管理文書、および自動生成に必要なスクリプト・テスト・ワークフローのみ保存する
 - 元画像に含まれる人物を特定できる特徴、会社名・ロゴ、現場名・所在地などの現場情報は、完成ピクトグラムへ残さない
 
 元画像の人物は作業姿勢の参考とし、個人を識別できない作業員シルエットとして表現する。
@@ -137,7 +137,8 @@ Excel上で写真や図面の上に重ねて配置できることを前提とす
 ### PNG
 
 - 確認用、簡易利用用として使用する
-- 完成したSVGから、背景の透明度を保持して生成する
+- 完成したSVGから、`scripts/build_catalog.py` により背景の透明度を保持して自動生成する
+- PNGは生成物として扱い、手動編集しない。SVGの寸法・viewBoxに従って出力する
 - SVGと形状・構図を完全に一致させる。縦横比や余白を変えたり、一部を切り取ったりしない
 - 修正時もSVGを更新してからPNGを再生成し、PNGだけを個別に描画・編集しない
 
@@ -182,7 +183,8 @@ worker_welding.png
 ## 12. 既存データの取扱い
 
 - 同名ファイルが存在する場合は、勝手に上書きしない
-- 既存ファイルを更新するのは、そのファイルへの修正依頼がある場合のみとする
+- 既存のSVG・メタデータを更新するのは、そのファイルへの修正依頼がある場合のみとする
+- PNGとカタログは生成物のため、自動処理で全件再生成してよい。メタデータから削除された作品のPNGも自動削除する
 - 新規制作時に名前が重複した場合は、既存の `catalog/catalog.md` と保存済みファイルを確認し、作業内容や姿勢の違いが分かる別名を提案する
 
 ---
@@ -194,41 +196,50 @@ worker_welding.png
 ```text
 construction-pictograms/
 ├─ README.md
-├─ svg/
-├─ png/
-├─ catalog/
-│  └─ catalog.md
-└─ docs/
-   └─ pictogram_guidelines.md
+├─ svg/                         # SVG原本
+├─ png/                         # 自動生成した透過PNG
+├─ metadata/                    # 作品ごとのYAMLメタデータ
+├─ catalog/catalog.md           # 自動生成カタログ
+├─ scripts/build_catalog.py
+├─ scripts/requirements.txt
+├─ .github/workflows/build-assets.yml
+└─ docs/pictogram_guidelines.md
 ```
-
-- SVG：`svg/`
-- PNG：`png/`
-- カタログ：`catalog/catalog.md`
-- 本指示書：`docs/pictogram_guidelines.md`
 
 ---
 
 ## 14. カタログ更新
 
-新しいピクトグラムを追加した場合は、`catalog/catalog.md` も同時に更新する。IDは既存カタログを確認して重複しない番号を割り当てる。既存ピクトグラムの修正時も、記載内容とプレビューが完成データに一致していることを確認する。
+カタログ情報の正本は `metadata/*.yml` とする。作品ごとにSVGと同じ名前のYAMLファイルを追加し、`catalog/catalog.md` は手動編集しない。
 
-最低限、以下の項目を記録する。
+例：`metadata/worker_waterproofing_roller.yml`
 
-| 項目 | 内容 |
-|---|---|
-| ID | 管理番号 |
-| 日本語名 | 現場で分かりやすい名称 |
-| ファイル名 | SVGファイル名 |
-| 分類 | 作業員、工具、重機など |
-| 備考 | 作業内容や特徴 |
+```yaml
+id: W006
+name_ja: 防水材塗布作業員（前面）
+file: worker_waterproofing_roller.svg
+category: 作業員
+note: フルハーネス着用、ローラーでコンクリート床に防水材を塗布
+```
 
-例：
+- 上記5項目はすべて必須の空でない文字列とする。`file` にはパスを含めずSVGファイル名だけを記録する
+- IDは英大文字の分類接頭辞と3桁以上の数字とする（例：`W001`）。既存のメタデータを確認して次の未使用番号を割り当てる
+- `scripts/build_catalog.py` はすべての `metadata/*.yml` を読み、接頭辞・数値のID順で一覧表とPNGプレビューを毎回再生成する
+- ID重複、ファイル名重複、必須項目不足、YAMLキー重複、SVG不足、メタデータ未登録のSVGはエラーとする
+- 自動変換は `svg`、`g`、`path`、`title`、`desc` 要素で構成されたSVGに対応する。他の図形はパスに変換する
+- 有効なviewBox、ベクターパス、外部参照なし、透明領域、黒一色の可視画素を検証する。構図や余白の適切さは目視でも確認する
+- 検証と全件のPNG生成に成功してから生成物を更新する。PNGはSVG原本の寸法・構図を維持する
 
-| ID | 日本語名 | ファイル名 | 分類 | 備考 |
-|---|---|---|---|---|
-| W001 | 仰向け姿勢作業員（フルハーネス） | `worker_supine_full_harness.svg` | 作業員 | 仰向けで両腕を上方へ伸ばす姿勢、ヘルメット・フルハーネス着用 |
-| W002 | 高圧洗浄作業員 | `worker_pressure_washing.svg` | 作業員 | 高圧洗浄ノズル・ホース使用、前傾姿勢 |
+ローカル確認（Python 3.12推奨）：
+
+```sh
+python -m pip install -r scripts/requirements.txt
+python -m unittest discover -s scripts/tests -v
+python scripts/build_catalog.py
+python scripts/build_catalog.py --check
+```
+
+`--check` はファイルを書き換えず、生成結果と保存済みPNG・カタログが一致しなければエラー終了する。
 
 ---
 
@@ -240,10 +251,10 @@ construction-pictograms/
 4. リポジトリ外に作業中画像を用意し、人物、主要工具、必要な作業対象を確認する
 5. 自然な作業姿勢を活かし、不要な背景・細部・識別情報を除いて、黒一色のシルエットに整理する
 6. 第9章の技術仕様を満たす背景透明のSVGを完成させ、マスターデータとして保存する
-7. 完成したSVGから透過PNGを生成し、形状・構図が一致することを確認する
-8. SVGとPNGを所定の保存先に配置し、`catalog/catalog.md` を更新する
-9. 差分、SVGの技術仕様・Excelでの表示、PNGの透過状態、カタログのリンク、および元画像が追加されていないことを確認する
-10. 作業ブランチでコミットし、GitHubへpushしてPull Requestを作成する
+7. `metadata/` に5項目のYAMLを作成し、ID・ファイル名の重複がないことを確認する
+8. SVGとYAMLを作業ブランチでコミットしてpushする。PNGとカタログはGitHub Actionsが同じブランチへ自動コミットする（ローカル生成も可）
+9. Actionsの成功と生成差分、SVGとPNGの構図・透過状態、カタログのリンク、元画像が追加されていないことを確認する。Excel表示は利用可能な環境で確認する
+10. 自動コミット後に作業ブランチをpullし、`main` 向けのPull Requestを作成する。既存のPull Requestには自動コミットが反映される
 11. 第17章の完成条件をすべて確認し、Pull Requestをリポジトリ管理者のレビュー・マージに委ねる
 
 ---
@@ -261,7 +272,13 @@ feature/add-worker-pressure-washing
 feature/add-worker-bolt-tightening
 ```
 
-- SVG、PNG、`catalog/catalog.md` の更新は同じ作業ブランチで行う
+- SVG、YAMLメタデータ、生成PNG、`catalog/catalog.md` の更新は同じ作業ブランチで行う
+- `build-assets.yml` は `main` 以外のブランチへの関連ファイルのpushで実行する。手動実行時も `main` は対象外とする
+- ワークフローは `GITHUB_TOKEN` の `contents: write` 権限で、変更された `png/` と `catalog/catalog.md` だけを同じブランチへ通常pushする。差分がなければコミットしない
+- 同じブランチの処理を直列化し、競合時にforce-pushしない。途中でブランチが進んでpushが拒否された場合は、後続の実行結果を確認する
+- 自動コミットによるpushは `GITHUB_TOKEN` の仕様でpushワークフローを再起動しない
+- 自動書き込みは本リポジトリ内の作業ブランチを対象とする。forkからの提案はローカルで生成して成果物もコミットする
+- Actionsが無効、または組織・ブランチの設定により自動書き込みが禁止されている場合は、管理者が設定を確認する。ローカル生成も同じスクリプトを使用する
 - 変更完了後に差分を確認してコミットし、作業ブランチをGitHubへpushする
 - `main` をマージ先とするPull Requestを作成する
 - Pull Requestのマージはリポジトリ管理者が行う
@@ -280,7 +297,9 @@ feature/add-worker-bolt-tightening
 - [ ] PNG背景が透明である
 - [ ] SVGとPNGの形状・構図が完全に一致している
 - [ ] ファイル名が命名規則に準拠している
-- [ ] `catalog/catalog.md` が更新されている
+- [ ] YAMLメタデータが存在し、ID・ファイル名が重複していない
+- [ ] 自動生成された `catalog/catalog.md` が最新である
+- [ ] Actionsが成功し、生成PNGとカタログが同じ作業ブランチにコミットされている（forkの場合はローカル生成結果を確認する）
 - [ ] 元画像がリポジトリへ追加されていない
 - [ ] Pull Requestが作成されている
 
