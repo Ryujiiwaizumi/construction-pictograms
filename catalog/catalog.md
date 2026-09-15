@@ -13,6 +13,7 @@
 | W007 | 防水材塗布作業員（背面） | [`worker_waterproofing_roller_rear.svg`](../svg/worker_waterproofing_roller_rear.svg) | 作業員 | フルハーネス着用。背面姿勢で長柄ローラーを使用。 |
 | W008 | 防水材塗布作業員（真後ろ・左前方） | [`worker_waterproofing_roller_rear_left.svg`](../svg/worker_waterproofing_roller_rear_left.svg) | 作業員 | 真後ろから見た姿勢。長柄ローラーを左前方へ伸ばす。ヘルメット・フルハーネス・保護手袋着用。 |
 | W009 | 片膝立ち起こし作業員（斜め前） | [`worker_kneeling_lifting_front.svg`](../svg/worker_kneeling_lifting_front.svg) | 作業員 | 片膝をつき、両手で物を起こす姿勢。ヘルメット・フルハーネス・保護手袋着用。工具・対象物なし。 |
+| W011 | 長尺物受取作業員（左後方） | [`worker_receiving_object_left_rear.svg`](../svg/worker_receiving_object_left_rear.svg) | 作業員 | 左後方から見た立ち姿勢で、両腕を伸ばして長尺物を受け取ろうとする。ヘルメット・フルハーネス・保護手袋着用。長尺物・工具なし。 |
 
 ## プレビュー
 
@@ -51,3 +52,7 @@
 ### W009 片膝立ち起こし作業員（斜め前）
 
 ![W009 片膝立ち起こし作業員（斜め前）](../png/worker_kneeling_lifting_front.png)
+
+### W011 長尺物受取作業員（左後方）
+
+![W011 長尺物受取作業員（左後方）](../png/worker_receiving_object_left_rear.png)
