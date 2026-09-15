@@ -15,6 +15,7 @@
 | W009 | 片膝立ち起こし作業員（斜め前） | [`worker_kneeling_lifting_front.svg`](../svg/worker_kneeling_lifting_front.svg) | 作業員 | 片膝をつき、両手で物を起こす姿勢。ヘルメット・フルハーネス・保護手袋着用。工具・対象物なし。 |
 | W010 | 片膝立ち起こし作業員（左向き） | [`worker_kneeling_lifting_left.svg`](../svg/worker_kneeling_lifting_left.svg) | 作業員 | 左を向いて片膝をつき、両手で物を起こす姿勢。ヘルメット・フルハーネス・保護手袋着用。工具・対象物なし。 |
 | W011 | 長尺物受取作業員（左後方） | [`worker_receiving_object_left_rear.svg`](../svg/worker_receiving_object_left_rear.svg) | 作業員 | 左後方から見た立ち姿勢で、両腕を伸ばして長尺物を受け取ろうとする。ヘルメット・フルハーネス・保護手袋着用。長尺物・工具なし。 |
+| W012 | 足場クランプ取外し作業員（正面） | [`worker_scaffold_clamp_removal_front.svg`](../svg/worker_scaffold_clamp_removal_front.svg) | 作業員 | 正面向きで脚を広げ、両手を腰前に構える取外し姿勢。ヘルメット・フルハーネス・保護手袋着用。工具・管・クランプなし。 |
 
 ## プレビュー
 
@@ -61,3 +62,7 @@
 ### W011 長尺物受取作業員（左後方）
 
 ![W011 長尺物受取作業員（左後方）](../png/worker_receiving_object_left_rear.png)
+
+### W012 足場クランプ取外し作業員（正面）
+
+![W012 足場クランプ取外し作業員（正面）](../png/worker_scaffold_clamp_removal_front.png)
